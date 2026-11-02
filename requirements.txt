@@ -1,7 +1,5 @@
 pandas
 requests
 matplotlib
-plotly
-streamlit
 jupyter
 ipykernel
