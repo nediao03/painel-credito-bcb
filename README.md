@@ -142,3 +142,9 @@ Depois, abra os notebooks da pasta `notebooks/`.
 ## Autor
 **Guilherme Fernandes da Costa** | Analista e Cientista de Dados
 [LinkedIn](https://www.linkedin.com/in/guilhermefernandesdacosta/)
+
+
+## Atualização dos dados
+Os dados e gráficos são atualizados automaticamente todo mês via GitHub Actions
+(`.github/workflows/atualizacao.yml`). Os números citados no texto referem-se à análise com dados
+até set/2026.
