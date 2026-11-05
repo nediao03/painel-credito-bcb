@@ -1,0 +1,46 @@
+name: Atualização mensal dos dados
+
+on:
+  schedule:
+    - cron: "17 12 3 * *"   # dia 3 de cada mês, 12:17 UTC (9:17 em Brasília)
+  workflow_dispatch:         # permite rodar manualmente pelo site do GitHub
+
+permissions:
+  contents: write            # autoriza salvar os dados novos no repositório
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Coletar dados do Banco Central
+        run: python src/coleta.py
+
+      - name: Tratar dados
+        run: python src/tratamento.py
+
+      - name: Reexecutar notebooks (atualiza tabelas e gráficos)
+        run: |
+          jupyter nbconvert --to notebook --execute --inplace notebooks/01_exploracao.ipynb
+          jupyter nbconvert --to notebook --execute --inplace notebooks/02_defasagem.ipynb
+
+      - name: Salvar alterações
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ figuras/ notebooks/
+          if git diff --cached --quiet; then
+            echo "Sem dados novos neste mês."
+          else
+            git commit -m "Atualização mensal dos dados ($(date +%Y-%m))"
+            git push
+          fi
